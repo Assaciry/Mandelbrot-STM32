@@ -4,8 +4,8 @@
 #include "LCD.h"
 #include "Button_IO.h"
 
-#define LCD_WIDTH   50 // Note: x-coordinates go wide
-#define LCD_HEIGHT  30 // Note: y-coordinates go high
+#define LCD_WIDTH   84 // Note: x-coordinates go wide
+#define LCD_HEIGHT  48 // Note: y-coordinates go high
 #define WHITE       0  // For drawing pixels. A 0 draws white.
 #define BLACK       1  // A 1 draws black.
 
@@ -26,7 +26,6 @@ PINOUT:
 */
 
 const int MAXITER = 50;
-volatile float coords[LCD_HEIGHT][LCD_WIDTH][2];
 volatile bool res[LCD_HEIGHT][LCD_WIDTH];
 int btn_state = 1;
 bool btn_pressed = false;
@@ -72,18 +71,21 @@ bool my_roundf(float num){
 	return num < 0.5f ? 0 : 1;
 }
 
-void calculate_mandelbrot(int MAX_ITER){
+void calculate_mandelbrot(float xoff, float yoff, float mult, int MAX_ITER){
 	int iter_num, i, j;
-	float x,y,xt;
+	float x,y,xt, xpos, ypos;
 	for(i = 0; i < LCD_HEIGHT; ++i){
 		for(j = 0; j < LCD_WIDTH; ++j){
 			iter_num = 0;
 			x = 0.0f;
 			y = 0.0f;
 			
+			xpos = (j-xoff)*mult;
+			ypos = (i-yoff)*mult;
+			
 			while(x*x+y*y < 4. && iter_num < MAX_ITER){
-				xt = x*x-y*y+coords[i][j][0];
-				y = 2.*x*y+coords[i][j][1];
+				xt = x*x-y*y+xpos;
+				y = 2.*x*y+ypos;
 				x=xt;
 				++iter_num;
 			}
@@ -92,23 +94,12 @@ void calculate_mandelbrot(int MAX_ITER){
 	}
 }
 
-void calculate_coords(float mult, float xoff, float yoff){
-	int i, j;
-	for(i = 0; i < LCD_HEIGHT; ++i){
-		for(j=0;j<LCD_WIDTH;++j){
-       coords[i][j][0] = (float)(j-xoff)*mult;
-       coords[i][j][1] = (float)(i-yoff)*mult;
-    }
-  }
-}
-
 void update_mandelbrot(float mult, float xoff, float yoff){
 	int i, j;
-	calculate_coords(mult,xoff,yoff);
-	calculate_mandelbrot(MAXITER);
+	calculate_mandelbrot(xoff, yoff, mult, MAXITER);
 	for(i = 0; i < LCD_HEIGHT; ++i){
 		for(j=0;j<LCD_WIDTH;++j){
-			set_pixel(j+(84-LCD_WIDTH)/2,i+(48-LCD_HEIGHT)/2,res[i][j]);
+			set_pixel(j,i,res[i][j]);
 		}
 	}
 }
