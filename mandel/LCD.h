@@ -19,6 +19,5 @@ void set_str(char *string, int x, int y, bool bw);
 void set_line(int x0, int y0, int x1, int y1, bool bw);
 void set_rect(int x0, int y0, int x1, int y1, bool fill, bool bw);
 void set_contrast(uint8_t contrast);
-void print_score(uint32_t score);
 
 #endif
