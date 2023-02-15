@@ -296,18 +296,6 @@ void set_char(char character, int x, int y, bool bw)
   }
 }
 
-void print_score(uint32_t score){
-	char digit = 0;
-	int x = LCD_WIDTH-6, y = LCD_HEIGHT-7;
-	set_str("Score:",0,y,BLACK);
-	do{
-		digit = score%10;
-		set_char(0x30 + digit,x,y,BLACK);
-		x-=6;
-		score/=10;
-	} while(score > 0);
-}
-
 // setStr draws a string of characters, calling setChar with
 // progressive coordinates until it's done.
 // This function was grabbed from the SparkFun ColorLCDShield
